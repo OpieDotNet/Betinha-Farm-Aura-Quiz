@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA DE MOGGING TERMINAL 67/42</title>
+    <style>
+        :root {
+            --bg-color: #050508;
+            --card-color: #0d0d14;
+            --accent-color: #a855f7;
+            --text-color: #ffffff;
+            --muted-color: #6b7280;
+            --border-color: #1f1f2e;
+        }
+
+        body {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            background-color: var(--card-color);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.2);
+            max-width: 480px;
+            width: 100%;
+            border: 2px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 5px;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .subtitle {
+            font-family: sans-serif;
+            text-align: center;
+            color: var(--muted-color);
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .quiz-step {
+            display: none;
+        }
+
+        .quiz-step.active {
+            display: block;
+        }
+
+        .question {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            font-family: sans-serif;
+            background-color: #13131f;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .option-btn:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #13131f;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        #result-screen {
+            text-align: center;
+        }
+
+        .score-badge {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            margin: 15px 0;
+            text-shadow: 3px 3px 0px #000;
+        }
+
+        .verdict {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .desc {
+            font-family: sans-serif;
+            color: var(--muted-color);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .restart-btn {
+            font-family: sans-serif;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .restart-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-container">
+        <h1 id="main-title">MOGGING TEST 67-42</h1>
+        <p class="subtitle" id="main-subtitle">Avaliador de Aura e Rizz Nível Terminal</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div id="questions-space"></div>
+    </div>
+
+    <div id="result-screen" style="display: none;">
+        <h1>DIAGNÓSTICO</h1>
+        <div class="score-badge" id="score-text">0%</div>
+        <div class="verdict" id="verdict-text">Calculando...</div>
+        <p class="desc" id="desc-text">Processando sua relevância no ecossistema.</p>
+        <button class="restart-btn" onclick="restartQuiz()">Resetar Streak</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            q: "Você entra na sala e detecta um beta respirando no mesmo ambiente. Qual a conduta?",
+            options: [
+                "Mantenho o silêncio do mewing e quebro a postura dele com um lookmaxxing agressivo",
+                "Meto um lookaway de -50 de aura instantâneo para não poluir minha visão",
+                "Ignoro e vou assistir edits no TikTok com música slowed",
+                "Cumprimento educadamente com um aperto de mão"
+            ]
+        },
+        {
+            q: "Um indivíduo afirma possuir 42 de Rizz em Ohio. Como você reage?",
+            options: [
+                "Lembro a ele que o teto da escala sigma exige no mínimo 67 de aura comprovada",
+                "Dou risada porque sei que o verdadeiro skibidi não precisa se gabar",
+                "Peço para ele provar mostrando a linha do maxilar",
+                "Não entendo o que essas palavras significam"
+            ]
+        },
+        {
+            q: "Qual a punição ideal para quem quebra o mewing para falar sobre sentimentos?",
+            options: [
+                "Banimento imediato para o esgoto de Ohio sem direito a reembolso de aura",
+                "Redução drástica no ranking para o nível de NPC genérico",
+                "Obrigação de assistir 12 horas seguidas de Baby Gronk e Livvy Dunne",
+                "Nenhuma, conversar é saudável"
+            ]
+        },
+        {
+            q: "Seu estoque de 'W Rizz' zera completamente no meio do dia. O que fazer?",
+            options: [
+                "Entro em hibernação profunda para preservar o grindset looksmaxxing",
+                "Spammo 'let him cook' mentalmente até a energia recarregar",
+                "Assisto compilações de edits de chads para absorver aura por osmose",
+                "Aceito que foi apenas um dia ruim e descanso"
+            ]
+        },
+        {
+            q: "Quem é o verdadeiro arqui-inimigo do Sigma nível 67?",
+            options: [
+                "O fã de condomínio que acha que tem rizz mas só tem internet rápida",
+                "O detentor da aura negativa que cancela streaks alheias",
+                "O impostor que pisca durante o eye-contact battle",
+                "As responsabilidades da vida adulta"
+            ]
+        },
+        {
+            q: "O chat começa a flodar 'L Rizz' na sua direção. Qual o contra-ataque?",
+            options: [
+                "Ativo o modo blue steel modificado com 42% de inclinação lateral",
+                "Invento que era tudo parte de um experimento social em Ohio",
+                "Apago o histórico e finjo que mudei de estado",
+                "Peço desculpas e tento melhorar o comportamento"
+            ]
+        },
+        {
+            q: "Se alguém não sabe o que é a 'Skibidi Toilette', essa pessoa é:",
+            options: [
+                "Um ser desprovido de qualquer conexão com a matrix da nova era",
+                "Um beta que claramente precisa de uma intervenção de grindset",
+                "Alguém com a mente purificada (invejável, mas fraco)",
+                "Apenas alguém que prefere ler livros ou fazer outras coisas"
+            ]
+        },
+        {
+            q: "Com que frequência você avalia o alinhamento de maxilar dos seus conhecidos?",
+            options: [
+                "A cada 10 segundos, o mogging cronometrado faz parte da rotina de sobrevivência",
+                "Apenas quando tentam competir por espaço ou atenção no ambiente",
+                "Sempre que lembro de manter minha própria postura ereta",
+                "Nunca reparei ou avaliei o rosto de ninguém dessa forma"
+            ]
+        },
+        {
+            q: "A regra de ouro do Sigma 42 absoluto determina que:",
+            options: [
+                "A aura nunca é gasta com quem não possui o selo verificado de Ohio",
+                "O silêncio vale mais do que qualquer tentativa de diálogo estruturado",
+                "O looksmaxxing é eterno, a interação social é temporária",
+                "Tratar todos com igualdade é a base de uma convivência justa"
+            ]
+        },
+        {
+            q: "Qual o diagnóstico para quem gabaritou este questionário escolhendo as respostas mais intensas?",
+            options: [
+                "Cérebro completamente derretido e corrompido, nível de aura incalculável",
+                "Pronto para dominar o topo da cadeia alimentar dos edits",
+                "Candidato oficial a prefeito honorário de Ohio",
+                "Um indivíduo que precisa urgentemente tocar em um pouco de grama"
+            ]
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    function initQuiz() {
+        const space = document.getElementById('questions-space');
+        space.innerHTML = '';
+        
+        questions.forEach((q, index) => {
+            let div = document.createElement('div');
+            div.className = `quiz-step ${index === 0 ? 'active' : ''}`;
+            div.id = `step-${index}`;
+            
+            let qTitle = document.createElement('div');
+            qTitle.className = 'question';
+            qTitle.innerText = q.q;
+            div.appendChild(qTitle);
+            
+            let optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            q.options.forEach((opt, optIndex) => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(optIndex);
+                optionsDiv.appendChild(btn);
+            });
+            
+            div.appendChild(optionsDiv);
+            space.appendChild(div);
+        });
+        updateProgress();
+    }
+
+    function selectOption(optIndex) {
+        if (optIndex === 0) score += 10;
+        else if (optIndex === 1) score += 7;
+        else if (optIndex === 2) score += 4;
+        else score += 0;
+
+        document.getElementById(`step-${currentQuestion}`).classList.remove('active');
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+            document.getElementById(`step-${currentQuestion}`).classList.add('active');
+            updateProgress();
+        } else {
+            showResults();
+        }
+    }
+
+    function updateProgress() {
+        const percent = (currentQuestion / questions.length) * 100;
+        document.getElementById('progress').style.width = `${percent}%`;
+    }
+
+    function showResults() {
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        
+        const finalScore = score;
+        document.getElementById('score-text').innerText = `${finalScore}/100`;
+        
+        let verdict = "";
+        let desc = "";
+        
+        if (finalScore >= 80) {
+            verdict = "MOGGER TERMINAL (67 DE AURA)";
+            desc = "Seu cérebro foi completamente substituído por algoritmos de shorts. Seu Rizz é perigoso e você emana a pura essência de Ohio. Os betinhas tremem ao ver sua linha de maxilar estática.";
+        } else if (finalScore >= 45) {
+            verdict = "SIGMA EM TREINAMENTO (42 DE RIZZ)";
+            desc = "Você consome conteúdo o suficiente para entender os códigos, mas o seu cérebro ainda mantém alguma funcionalidade básica. Falta consistência na manutenção da sua streak de looksmaxxing.";
+        } else {
+            verdict = "NÍVEL DE SENSATEZ NORMAL (0 AURA)";
+            desc = "Infelizmente ou felizmente, seu cérebro está intacto. Você provavelmente passa tempo demais ao ar livre, conversa com pessoas reais e não sabe o formato correto de um crânio sigma.";
+        }
+        
+        document.getElementById('verdict-text').innerText = verdict;
+        document.getElementById('desc-text').innerText = desc;
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        document.getElementById('result-screen').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        initQuiz();
+    }
+
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>
